@@ -116,7 +116,8 @@ hapi:
 
     custom-bean-packages: be.fgov.ehealth
     custom-interceptor-classes: be.fgov.ehealth.ApiKeyInterceptor
-
+    partitioning:
+      allow_references_across_partitions: true
 
 
     ### This flag when enabled to true, will avail evaluate measure operations from CR Module.
