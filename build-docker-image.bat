@@ -1,1 +1,1 @@
-docker build -t hapi-fhir/hapi-fhir-jpaserver-starter .
+docker build -t ehealthplatformstandards/hapi-fhir-jpaserver-starter .
