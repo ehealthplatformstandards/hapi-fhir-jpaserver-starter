@@ -358,19 +358,27 @@ spring:
       on-profile: PROD
 
   datasource:
-    url: jdbc:mysql://172.17.0.1:3306/fhir-testserver
-    username: fhir-testserver-java-container
-    password: 9nm!zLNxb
+    ###url: jdbc:mysql://172.17.0.1:3306/fhir-testserver
+    ###username: fhir-testserver-java-container
+    ###password: 9nm!zLNxb
+    url: jdbc:postgresql://10.20.50.204:5432/ehp-fhir-testserver
+    username: hp-fhir-testserver
+    password: cU8.Q4_askLeAP4Juq4E*UQn6_HhMZxqYvn
   jpa:
     properties:
       ###hibernate.dialect: ca.uhn.fhir.jpa.model.dialect.HapiFhirMariaDBDialect
-      hibernate.dialect: ca.uhn.fhir.jpa.model.dialect.HapiFhirMySQLDialect
+      ###hibernate.dialect: ca.uhn.fhir.jpa.model.dialect.HapiFhirMySQLDialect
+      hibernate.dialect: ca.uhn.fhir.jpa.model.dialect.HapiFhirPostgresDialect
   testserver:
     datasource:
       url: jdbc:mysql://172.17.0.1:3306/fhir-testserver
+      ###url: jdbc:postgresql://10.20.50.204:5432/ehp-fhir-testserver
       username: fhir-testserver-java-container
+      ###username: ehp-fhir-testserver
       password: 9nm!zLNxb
+      ###password: cU8.Q4_askLeAP4Juq4E*UQn6_HhMZxqYvn
       driverClassName: com.mysql.cj.jdbc.Driver
+      ###driverClassName: org.postgresql.Driver
       max-active: 15
 
       # database connection pool size
