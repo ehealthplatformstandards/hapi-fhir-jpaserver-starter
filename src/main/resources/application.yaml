@@ -371,14 +371,14 @@ spring:
       hibernate.dialect: ca.uhn.fhir.jpa.model.dialect.HapiFhirPostgresDialect
   testserver:
     datasource:
-      url: jdbc:mysql://172.17.0.1:3306/fhir-testserver
-      ###url: jdbc:postgresql://10.20.50.204:5432/ehp-fhir-testserver
-      username: fhir-testserver-java-container
-      ###username: ehp-fhir-testserver
-      password: 9nm!zLNxb
-      ###password: cU8.Q4_askLeAP4Juq4E*UQn6_HhMZxqYvn
-      driverClassName: com.mysql.cj.jdbc.Driver
-      ###driverClassName: org.postgresql.Driver
+      ###url: jdbc:mysql://172.17.0.1:3306/fhir-testserver
+      url: jdbc:postgresql://10.20.50.204:5432/ehp-fhir-testserver
+      ###username: fhir-testserver-java-container
+      username: ehp-fhir-testserver
+      ###password: 9nm!zLNxb
+      password: cU8.Q4_askLeAP4Juq4E*UQn6_HhMZxqYvn
+      ###driverClassName: com.mysql.cj.jdbc.Driver
+      driverClassName: org.postgresql.Driver
       max-active: 15
 
       # database connection pool size
