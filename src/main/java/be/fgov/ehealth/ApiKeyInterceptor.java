@@ -80,12 +80,12 @@ public class ApiKeyInterceptor {
 		List<Map.Entry<String,String[]>> parsedParams = UrlUtil.parseQueryString(parsedCompleteUrl.getQuery()).entrySet().stream().filter(e -> !"api_key".equals(e.getKey())).toList();
 		String newParameterString = null;
 		for (Map.Entry<String,String[]> e : parsedParams){
-			if (StringUtils.isEmpty(newParameterString)){
-				newParameterString="?";
-			}else{
-				newParameterString+="&";
-			}
 			for (String instance: e.getValue()){
+				if (StringUtils.isEmpty(newParameterString)){
+					newParameterString="?";
+				}else{
+					newParameterString+="&";
+				}
 				newParameterString+=e.getKey();
 				newParameterString+="=";
 				newParameterString+=instance;
