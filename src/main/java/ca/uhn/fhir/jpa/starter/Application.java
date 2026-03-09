@@ -2,7 +2,6 @@ package ca.uhn.fhir.jpa.starter;
 
 import be.fgov.ehealth.packages.PackageLoaderConfig;
 import be.fgov.ehealth.partitions.PartitionsConfig;
-import be.fgov.ehealth.repository.TestServerConfig;
 import ca.uhn.fhir.batch2.jobs.config.Batch2JobsConfig;
 import ca.uhn.fhir.jpa.batch2.JpaBatch2Config;
 import ca.uhn.fhir.jpa.starter.annotations.OnEitherVersion;
@@ -42,7 +41,6 @@ import org.springframework.context.annotation.Import;
 	MdmConfig.class,
 	JpaBatch2Config.class,
 	Batch2JobsConfig.class,
-	TestServerConfig.class,
 	PackageLoaderConfig.class
 	,
 	PartitionsConfig.class
@@ -50,7 +48,7 @@ import org.springframework.context.annotation.Import;
 @EntityScan("be.fgov.ehealth.entities")
 public class Application extends SpringBootServletInitializer {
 
-	public static void main(String[] args) {
+	public static void main(final String[] args) {
 
 		SpringApplication.run(Application.class, args);
 
@@ -64,8 +62,8 @@ public class Application extends SpringBootServletInitializer {
 
 	@Bean
 	@Conditional(OnEitherVersion.class)
-	public ServletRegistrationBean hapiServletRegistration(RestfulServer restfulServer) {
-		ServletRegistrationBean servletRegistrationBean = new ServletRegistrationBean();
+	public ServletRegistrationBean hapiServletRegistration(final RestfulServer restfulServer) {
+		final ServletRegistrationBean servletRegistrationBean = new ServletRegistrationBean();
 		beanFactory.autowireBean(restfulServer);
 		servletRegistrationBean.setServlet(restfulServer);
 		servletRegistrationBean.addUrlMappings("/fhir/*");

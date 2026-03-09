@@ -1,7 +1,7 @@
 #Uncomment the "servlet" and "context-path" lines below to make the fhir endpoint available at /example/path/fhir instead of the default value of /fhir
 server:
-#  servlet:
-#    context-path: /example/path
+  #  servlet:
+  #    context-path: /example/path
   port: 8080
 #Adds the option to go to eg. http://localhost:8080/actuator/health for seeing the running configuration
 #see https://docs.spring.io/spring-boot/docs/current/reference/html/actuator.html#actuator.endpoints
@@ -34,53 +34,7 @@ spring:
     enabled: false
     baselineOnMigrate: true
     fail-on-missing-locations: false
-  testserver:
-    datasource:
-      #url: 'jdbc:h2:file:./target/database/h2'
-      url: jdbc:mysql://localhost/testserver
-      username: root
-      password: Ehealthsqlserver1
-      driverClassName: com.mysql.cj.jdbc.Driver
-      max-active: 15
-
-      # database connection pool size
-      hikari:
-        maximum-pool-size: 10
-      jpa:
-        properties:
-          hibernate.format_sql: true
-          hibernate.show_sql: true
-
-          #Hibernate dialect is automatically detected except Postgres and H2.
-          #If using H2, then supply the value of ca.uhn.fhir.jpa.model.dialect.HapiFhirH2Dialect
-          #If using postgres, then supply the value of ca.uhn.fhir.jpa.model.dialect.HapiFhirPostgresDialect
-          hibernate.dialect: org.hibernate.dialect.MySQL8Dialect
-          #      hibernate.hbm2ddl.auto: update
-          #      hibernate.jdbc.batch_size: 20
-          #      hibernate.cache.use_query_cache: false
-          #      hibernate.cache.use_second_level_cache: false
-          #      hibernate.cache.use_structured_entries: false
-          #      hibernate.cache.use_minimal_puts: false
-
-          ###    These settings will enable fulltext search with lucene or elastic
-          hibernate.search.enabled: false
-      ### lucene parameters
-      #      hibernate.search.backend.type: lucene
-      #      hibernate.search.backend.analysis.configurer: ca.uhn.fhir.jpa.search.HapiHSearchAnalysisConfigurers$HapiLuceneAnalysisConfigurer
-      #      hibernate.search.backend.directory.type: local-filesystem
-      #      hibernate.search.backend.directory.root: target/lucenefiles
-      #      hibernate.search.backend.lucene_version: lucene_current
-      ### elastic parameters ===> see also elasticsearch section below <===
-    #      hibernate.search.backend.type: elasticsearch
-    #      hibernate.search.backend.analysis.configurer: ca.uhn.fhir.jpa.search.HapiHSearchAnalysisConfigurers$HapiElasticAnalysisConfigurer
   datasource:
-    #url: 'jdbc:h2:file:./target/database/h2'
-    url: jdbc:mysql://localhost/testserver
-    username: root
-    password: Ehealthsqlserver1
-    driverClassName: com.mysql.cj.jdbc.Driver
-    max-active: 15
-
     # database connection pool size
     hikari:
       maximum-pool-size: 10
@@ -92,22 +46,22 @@ spring:
       #Hibernate dialect is automatically detected except Postgres and H2.
       #If using H2, then supply the value of ca.uhn.fhir.jpa.model.dialect.HapiFhirH2Dialect
       #If using postgres, then supply the value of ca.uhn.fhir.jpa.model.dialect.HapiFhirPostgresDialect
-      hibernate.dialect: ca.uhn.fhir.jpa.model.dialect.HapiFhirMySQLDialect
-  #      hibernate.hbm2ddl.auto: update
-  #      hibernate.jdbc.batch_size: 20
-  #      hibernate.cache.use_query_cache: false
-  #      hibernate.cache.use_second_level_cache: false
-  #      hibernate.cache.use_structured_entries: false
-  #      hibernate.cache.use_minimal_puts: false
+      hibernate.dialect: ca.uhn.fhir.jpa.model.dialect.HapiFhirPostgresDialect
+      #      hibernate.hbm2ddl.auto: update
+      #      hibernate.jdbc.batch_size: 20
+      #      hibernate.cache.use_query_cache: false
+      #      hibernate.cache.use_second_level_cache: false
+      #      hibernate.cache.use_structured_entries: false
+      #      hibernate.cache.use_minimal_puts: false
 
-  ###    These settings will enable fulltext search with lucene or elastic
+      ###    These settings will enable fulltext search with lucene or elastic
       hibernate.search.enabled: false
   ### lucene parameters
-#      hibernate.search.backend.type: lucene
-#      hibernate.search.backend.analysis.configurer: ca.uhn.fhir.jpa.search.HapiHSearchAnalysisConfigurers$HapiLuceneAnalysisConfigurer
-#      hibernate.search.backend.directory.type: local-filesystem
-#      hibernate.search.backend.directory.root: target/lucenefiles
-#      hibernate.search.backend.lucene_version: lucene_current
+  #      hibernate.search.backend.type: lucene
+  #      hibernate.search.backend.analysis.configurer: ca.uhn.fhir.jpa.search.HapiHSearchAnalysisConfigurers$HapiLuceneAnalysisConfigurer
+  #      hibernate.search.backend.directory.type: local-filesystem
+  #      hibernate.search.backend.directory.root: target/lucenefiles
+  #      hibernate.search.backend.lucene_version: lucene_current
   ### elastic parameters ===> see also elasticsearch section below <===
 #      hibernate.search.backend.type: elasticsearch
 #      hibernate.search.backend.analysis.configurer: ca.uhn.fhir.jpa.search.HapiHSearchAnalysisConfigurers$HapiElasticAnalysisConfigurer
@@ -247,7 +201,7 @@ hapi:
     # comma-separated list of fully qualified provider classes. 
     # classes listed here will be fetched from the Spring context when combined with 'custom-bean-packages', 
     # or will be instantiated via reflection using an no-arg contructor; then registered with the server  
-    custom-provider-classes:  be.fgov.ehealth.ImplementationGuideByNameR4OperationProvider
+    custom-provider-classes: be.fgov.ehealth.ImplementationGuideByNameR4OperationProvider
     
     # Threadpool size for BATCH'ed GETs in a bundle.
     #    bundle_batch_pool_size: 10
@@ -319,73 +273,8 @@ hapi:
 #  username: SomeUsername
 ---
 
-spring:
-  config:
-    activate:
-      on-profile: LOCAL
-  datasource:
-    url: jdbc:mysql://localhost/testserver
-  jpa:
-    properties:
-      hibernate.dialect: ca.uhn.fhir.jpa.model.dialect.HapiFhirMySQLDialect
-  testserver:
-    datasource:
-      #url: 'jdbc:h2:file:./target/database/h2'
-      url: jdbc:mysql://localhost/testserver
-      username: root
-      password: Ehealthsqlserver1
-      driverClassName: com.mysql.cj.jdbc.Driver
-      max-active: 15
-
-      # database connection pool size
-      hikari:
-        maximum-pool-size: 10
-      jpa:
-        properties:
-          hibernate.format_sql: true
-          hibernate.show_sql: true
-          hibernate.dialect: org.hibernate.dialect.MySQL8Dialect
-
----
-spring:
-  config:
-    activate:
-      on-profile: DEV
----
-spring:
-  config:
-    activate:
-      on-profile: PROD
-
-  datasource:
-    ###url: jdbc:mysql://172.17.0.1:3306/fhir-testserver
-    ###username: fhir-testserver-java-container
-    ###password: 9nm!zLNxb
-    url: jdbc:postgresql://10.20.50.204:5432/ehp-fhir-testserver
-    username: hp-fhir-testserver
-    password: cU8.Q4_askLeAP4Juq4E*UQn6_HhMZxqYvn
-  jpa:
-    properties:
-      ###hibernate.dialect: ca.uhn.fhir.jpa.model.dialect.HapiFhirMariaDBDialect
-      ###hibernate.dialect: ca.uhn.fhir.jpa.model.dialect.HapiFhirMySQLDialect
-      hibernate.dialect: ca.uhn.fhir.jpa.model.dialect.HapiFhirPostgresDialect
-  testserver:
-    datasource:
-      ###url: jdbc:mysql://172.17.0.1:3306/fhir-testserver
-      url: jdbc:postgresql://10.20.50.204:5432/ehp-fhir-testserver
-      ###username: fhir-testserver-java-container
-      username: ehp-fhir-testserver
-      ###password: 9nm!zLNxb
-      password: cU8.Q4_askLeAP4Juq4E*UQn6_HhMZxqYvn
-      ###driverClassName: com.mysql.cj.jdbc.Driver
-      driverClassName: org.postgresql.Driver
-      max-active: 15
-
-      # database connection pool size
-      hikari:
-        maximum-pool-size: 10
-      jpa:
-        properties:
-          hibernate.format_sql: true
-          hibernate.show_sql: true
-          hibernate.dialect: org.hibernate.dialect.MySQL8Dialect
+service:
+  dte-backend:
+    endpoint: https://dte.ehealth.fgov.be
+    username: management
+    password: management

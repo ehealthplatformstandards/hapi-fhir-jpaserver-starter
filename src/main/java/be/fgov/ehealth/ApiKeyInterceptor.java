@@ -1,7 +1,7 @@
 package be.fgov.ehealth;
 
 
-import be.fgov.ehealth.entities.Tenants;
+import be.fgov.ehealth.domain.TenantView;
 import be.fgov.ehealth.repository.TenantRepository;
 import ca.uhn.fhir.interceptor.api.Hook;
 import ca.uhn.fhir.interceptor.api.Interceptor;
@@ -16,21 +16,13 @@ import ca.uhn.fhir.util.UrlUtil;
 import com.google.common.base.Strings;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import net.sourceforge.plantuml.url.UrlBuilder;
 import org.apache.commons.lang3.StringUtils;
-import org.flywaydb.core.internal.util.UrlUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.*;
-import java.util.function.BiConsumer;
-import java.util.function.BinaryOperator;
-import java.util.function.Function;
-import java.util.function.Supplier;
-import java.util.stream.Collector;
 
 @Component
 @Interceptor
@@ -43,25 +35,25 @@ public class ApiKeyInterceptor {
 	private IPartitionLookupSvc partitionLookupSvc;
 
 	@Hook(Pointcut.SERVER_INCOMING_REQUEST_PRE_HANDLER_SELECTED)
-	public boolean handleMethod(HttpServletRequest rqf, HttpServletResponse rpf, RequestDetails requestDetails, ServletRequestDetails srqd){
-		Map<String, String[]> params = requestDetails.getParameters();
-		List<String> keyList = params.get("api_key")==null?new ArrayList<>():Arrays.stream(params.get("api_key")).toList();
+	public boolean handleMethod(final HttpServletRequest rqf, final HttpServletResponse rpf, final RequestDetails requestDetails, final ServletRequestDetails srqd) {
+		final Map<String, String[]> params = requestDetails.getParameters();
+		final List<String> keyList = params.get("api_key") == null ? new ArrayList<>() : Arrays.stream(params.get("api_key")).toList();
 
 
-		keyList.stream().filter(x->!Strings.isNullOrEmpty(x)).findFirst().ifPresentOrElse(s -> {
+		keyList.stream().filter(x -> !Strings.isNullOrEmpty(x)).findFirst().ifPresentOrElse(s -> {
 
-			Tenants tenant = tenantRepository.getTenantByApiKey(s);
-			if (tenant == null){
+			final Optional<TenantView> tenant = tenantRepository.findByTenantApiKey(s);
+			if (tenant.isEmpty()) {
 				throw new AuthenticationException("No such api_key!");
 			} else {
 				try {
-					partitionLookupSvc.getPartitionByName(tenant.getId_tenant().toString());
-				} catch(ResourceNotFoundException rnfe) {
-					PartitionEntity pe = new PartitionEntity();
-					pe.setId(tenant.getId_tenant());
-					pe.setName(tenant.getId_tenant().toString());
-					pe.setDescription(tenant.getTenant_label());
-					partitionLookupSvc.createPartition(pe,requestDetails);
+					partitionLookupSvc.getPartitionByName(tenant.orElseThrow().getId().toString());
+				} catch (final ResourceNotFoundException rnfe) {
+					final PartitionEntity pe = new PartitionEntity();
+					pe.setId(tenant.orElseThrow().getId());
+					pe.setName(tenant.orElseThrow().getId().toString());
+					pe.setDescription(tenant.orElseThrow().getTenantLabel());
+					partitionLookupSvc.createPartition(pe, requestDetails);
 				}
 
 			}
@@ -74,27 +66,27 @@ public class ApiKeyInterceptor {
 		URI parsedCompleteUrl = null;
 		try {
 			parsedCompleteUrl = new URI(requestDetails.getCompleteUrl());
-		} catch (URISyntaxException e) {
+		} catch (final URISyntaxException e) {
 			throw new RuntimeException(e);
 		}
-		List<Map.Entry<String,String[]>> parsedParams = UrlUtil.parseQueryString(parsedCompleteUrl.getQuery()).entrySet().stream().filter(e -> !"api_key".equals(e.getKey())).toList();
+		final List<Map.Entry<String, String[]>> parsedParams = UrlUtil.parseQueryString(parsedCompleteUrl.getQuery()).entrySet().stream().filter(e -> !"api_key".equals(e.getKey())).toList();
 		String newParameterString = null;
-		for (Map.Entry<String,String[]> e : parsedParams){
-			for (String instance: e.getValue()){
-				if (StringUtils.isEmpty(newParameterString)){
-					newParameterString="?";
-				}else{
-					newParameterString+="&";
+		for (final Map.Entry<String, String[]> e : parsedParams) {
+			for (final String instance : e.getValue()) {
+				if (StringUtils.isEmpty(newParameterString)) {
+					newParameterString = "?";
+				} else {
+					newParameterString += "&";
 				}
-				newParameterString+=e.getKey();
-				newParameterString+="=";
-				newParameterString+=instance;
+				newParameterString += e.getKey();
+				newParameterString += "=";
+				newParameterString += instance;
 			}
 		}
 		URI newCompleteUrl = null;
 		try {
-			newCompleteUrl = new URI(parsedCompleteUrl.getScheme(),parsedCompleteUrl.getAuthority(),parsedCompleteUrl.getPath(),newParameterString,parsedCompleteUrl.getFragment());
-		} catch (URISyntaxException e) {
+			newCompleteUrl = new URI(parsedCompleteUrl.getScheme(), parsedCompleteUrl.getAuthority(), parsedCompleteUrl.getPath(), newParameterString, parsedCompleteUrl.getFragment());
+		} catch (final URISyntaxException e) {
 			throw new RuntimeException(e);
 		}
 		requestDetails.setCompleteUrl(newCompleteUrl.toString());

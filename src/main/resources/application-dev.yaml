@@ -1,0 +1,3 @@
+service:
+  dte-backend:
+    endpoint: https://dte-dev.ehealth.fgov.be
