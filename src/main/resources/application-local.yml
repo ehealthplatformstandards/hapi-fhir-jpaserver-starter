@@ -1,5 +1,8 @@
 spring:
   datasource:
-    url: jdbc:postgresql://host.docker.internal:5432/dte?currentSchema=hapi_fhir
+    url: jdbc:postgresql://localhost:5432/dte?currentSchema=hapi_fhir
     username: myuser
     password: mypassword
+service:
+  dte-backend:
+    endpoint: http://localhost:9090

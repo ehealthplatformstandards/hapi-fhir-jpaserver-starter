@@ -1,3 +1,5 @@
-service:
-  dte-backend:
-    endpoint: https://dte-dev.ehealth.fgov.be
+spring:
+  datasource:
+    url: jdbc:postgresql://host.docker.internal:5432/dte?currentSchema=hapi_fhir
+    username: root
+    password: xMkyqrX8zXKzWxrN9VMK.B*Lk.2YgvH_Z.b

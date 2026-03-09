@@ -28,6 +28,7 @@ import java.util.*;
 @Interceptor
 public class ApiKeyInterceptor {
 
+	public static final String API_KEY = "api_key";
 	@Autowired
 	private TenantRepository tenantRepository;
 
@@ -37,39 +38,37 @@ public class ApiKeyInterceptor {
 	@Hook(Pointcut.SERVER_INCOMING_REQUEST_PRE_HANDLER_SELECTED)
 	public boolean handleMethod(final HttpServletRequest rqf, final HttpServletResponse rpf, final RequestDetails requestDetails, final ServletRequestDetails srqd) {
 		final Map<String, String[]> params = requestDetails.getParameters();
-		final List<String> keyList = params.get("api_key") == null ? new ArrayList<>() : Arrays.stream(params.get("api_key")).toList();
+		final List<String> keyList = params.get(API_KEY) == null ? new ArrayList<>() : Arrays.stream(params.get(API_KEY)).toList();
 
 
-		keyList.stream().filter(x -> !Strings.isNullOrEmpty(x)).findFirst().ifPresentOrElse(s -> {
-
-			final Optional<TenantView> tenant = tenantRepository.findByTenantApiKey(s);
-			if (tenant.isEmpty()) {
-				throw new AuthenticationException("No such api_key!");
-			} else {
-				try {
-					partitionLookupSvc.getPartitionByName(tenant.orElseThrow().getId().toString());
-				} catch (final ResourceNotFoundException rnfe) {
-					final PartitionEntity pe = new PartitionEntity();
-					pe.setId(tenant.orElseThrow().getId());
-					pe.setName(tenant.orElseThrow().getId().toString());
-					pe.setDescription(tenant.orElseThrow().getTenantLabel());
-					partitionLookupSvc.createPartition(pe, requestDetails);
+		keyList.stream().filter(x -> !Strings.isNullOrEmpty(x)).findFirst()
+			.ifPresentOrElse(s -> {
+				final Optional<TenantView> tenant = tenantRepository.findByTenantApiKey(s);
+				if (tenant.isEmpty()) {
+					throw new AuthenticationException("No such api_key!");
+				} else {
+					try {
+						partitionLookupSvc.getPartitionByName(tenant.orElseThrow().getId().toString());
+					} catch (final ResourceNotFoundException e) {
+						final PartitionEntity pe = new PartitionEntity();
+						pe.setId(tenant.orElseThrow().getId());
+						pe.setName(tenant.orElseThrow().getId().toString());
+						pe.setDescription(tenant.orElseThrow().getTenantLabel());
+						partitionLookupSvc.createPartition(pe, requestDetails);
+					}
 				}
+			}, () -> {
+				throw new AuthenticationException("Please provide api_key!");
+			});
 
-			}
-
-		}, () -> {
-			throw new AuthenticationException("Please provide api_key!");
-		});
-
-		requestDetails.removeParameter("api_key");
+		requestDetails.removeParameter(API_KEY);
 		URI parsedCompleteUrl = null;
 		try {
 			parsedCompleteUrl = new URI(requestDetails.getCompleteUrl());
 		} catch (final URISyntaxException e) {
 			throw new RuntimeException(e);
 		}
-		final List<Map.Entry<String, String[]>> parsedParams = UrlUtil.parseQueryString(parsedCompleteUrl.getQuery()).entrySet().stream().filter(e -> !"api_key".equals(e.getKey())).toList();
+		final List<Map.Entry<String, String[]>> parsedParams = UrlUtil.parseQueryString(parsedCompleteUrl.getQuery()).entrySet().stream().filter(e -> !API_KEY.equals(e.getKey())).toList();
 		String newParameterString = null;
 		for (final Map.Entry<String, String[]> e : parsedParams) {
 			for (final String instance : e.getValue()) {

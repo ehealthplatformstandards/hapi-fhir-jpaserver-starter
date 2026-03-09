@@ -41,8 +41,7 @@ import org.springframework.context.annotation.Import;
 	MdmConfig.class,
 	JpaBatch2Config.class,
 	Batch2JobsConfig.class,
-	PackageLoaderConfig.class
-	,
+	PackageLoaderConfig.class,
 	PartitionsConfig.class
 })
 @EntityScan("be.fgov.ehealth.entities")
