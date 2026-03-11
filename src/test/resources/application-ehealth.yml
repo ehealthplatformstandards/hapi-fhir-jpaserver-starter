@@ -1,0 +1,5 @@
+service:
+  dte-backend:
+    endpoint: http://localhost:9090/dte
+    username: management
+    password: management

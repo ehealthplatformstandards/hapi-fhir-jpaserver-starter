@@ -3,6 +3,7 @@ package be.fgov.ehealth;
 
 import be.fgov.ehealth.domain.TenantView;
 import be.fgov.ehealth.repository.TenantRepository;
+import be.fgov.ehealth.utils.UrlTools;
 import ca.uhn.fhir.interceptor.api.Hook;
 import ca.uhn.fhir.interceptor.api.Interceptor;
 import ca.uhn.fhir.interceptor.api.Pointcut;
@@ -11,85 +12,54 @@ import ca.uhn.fhir.jpa.partition.IPartitionLookupSvc;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.server.exceptions.AuthenticationException;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
-import ca.uhn.fhir.rest.server.servlet.ServletRequestDetails;
-import ca.uhn.fhir.util.UrlUtil;
-import com.google.common.base.Strings;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.*;
+import java.util.Optional;
+
+import static be.fgov.ehealth.utils.UrlTools.API_KEY;
 
 @Component
 @Interceptor
 public class ApiKeyInterceptor {
 
-	public static final String API_KEY = "api_key";
-	@Autowired
-	private TenantRepository tenantRepository;
+	private final TenantRepository tenantRepository;
+	private final IPartitionLookupSvc partitionLookupSvc;
 
-	@Autowired
-	private IPartitionLookupSvc partitionLookupSvc;
+	public ApiKeyInterceptor(final TenantRepository tenantRepository, final IPartitionLookupSvc partitionLookupSvc) {
+		this.tenantRepository = tenantRepository;
+		this.partitionLookupSvc = partitionLookupSvc;
+	}
 
 	@Hook(Pointcut.SERVER_INCOMING_REQUEST_PRE_HANDLER_SELECTED)
-	public boolean handleMethod(final HttpServletRequest rqf, final HttpServletResponse rpf, final RequestDetails requestDetails, final ServletRequestDetails srqd) {
-		final Map<String, String[]> params = requestDetails.getParameters();
-		final List<String> keyList = params.get(API_KEY) == null ? new ArrayList<>() : Arrays.stream(params.get(API_KEY)).toList();
-
-
-		keyList.stream().filter(x -> !Strings.isNullOrEmpty(x)).findFirst()
-			.ifPresentOrElse(s -> {
-				final Optional<TenantView> tenant = tenantRepository.findByTenantApiKey(s);
-				if (tenant.isEmpty()) {
-					throw new AuthenticationException("No such api_key!");
-				} else {
-					try {
-						partitionLookupSvc.getPartitionByName(tenant.orElseThrow().getId().toString());
-					} catch (final ResourceNotFoundException e) {
-						final PartitionEntity pe = new PartitionEntity();
-						pe.setId(tenant.orElseThrow().getId());
-						pe.setName(tenant.orElseThrow().getId().toString());
-						pe.setDescription(tenant.orElseThrow().getTenantLabel());
-						partitionLookupSvc.createPartition(pe, requestDetails);
-					}
-				}
-			}, () -> {
-				throw new AuthenticationException("Please provide api_key!");
-			});
-
-		requestDetails.removeParameter(API_KEY);
-		URI parsedCompleteUrl = null;
-		try {
-			parsedCompleteUrl = new URI(requestDetails.getCompleteUrl());
-		} catch (final URISyntaxException e) {
-			throw new RuntimeException(e);
-		}
-		final List<Map.Entry<String, String[]>> parsedParams = UrlUtil.parseQueryString(parsedCompleteUrl.getQuery()).entrySet().stream().filter(e -> !API_KEY.equals(e.getKey())).toList();
-		String newParameterString = null;
-		for (final Map.Entry<String, String[]> e : parsedParams) {
-			for (final String instance : e.getValue()) {
-				if (StringUtils.isEmpty(newParameterString)) {
-					newParameterString = "?";
-				} else {
-					newParameterString += "&";
-				}
-				newParameterString += e.getKey();
-				newParameterString += "=";
-				newParameterString += instance;
-			}
-		}
-		URI newCompleteUrl = null;
-		try {
-			newCompleteUrl = new URI(parsedCompleteUrl.getScheme(), parsedCompleteUrl.getAuthority(), parsedCompleteUrl.getPath(), newParameterString, parsedCompleteUrl.getFragment());
-		} catch (final URISyntaxException e) {
-			throw new RuntimeException(e);
-		}
-		requestDetails.setCompleteUrl(newCompleteUrl.toString());
-
+	public boolean handleMethod(final RequestDetails requestDetails) {
+		updatePartitionWithApiKey(requestDetails);
+		requestDetails.setCompleteUrl(UrlTools.stripApiKey(requestDetails));
 		return true;
+	}
+
+	private void updatePartitionWithApiKey(final RequestDetails requestDetails) {
+		final String apiKey = Optional.ofNullable(requestDetails.getParameters().get(API_KEY))
+			.filter(arr -> arr.length > 0)
+			.map(arr -> arr[0])
+			.filter(StringUtils::isNotBlank)
+			.orElseThrow(() -> new AuthenticationException("Please provide api_key!"));
+
+		final TenantView tenant = tenantRepository.findByTenantApiKey(apiKey)
+			.orElseThrow(() -> new AuthenticationException("No such api_key!"));
+
+		ensurePartitionExists(tenant, requestDetails);
+	}
+
+	private void ensurePartitionExists(final TenantView tenant, final RequestDetails requestDetails) {
+		try {
+			partitionLookupSvc.getPartitionByName(tenant.getId().toString());
+		} catch (final ResourceNotFoundException e) {
+			final PartitionEntity pe = new PartitionEntity();
+			pe.setId(tenant.getId());
+			pe.setName(tenant.getId().toString());
+			pe.setDescription(tenant.getTenantLabel());
+			partitionLookupSvc.createPartition(pe, requestDetails);
+		}
 	}
 }

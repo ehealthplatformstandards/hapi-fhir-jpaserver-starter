@@ -9,37 +9,44 @@ import org.hl7.fhir.instance.model.api.IIdType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.context.ApplicationContext;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(SpringExtension.class)
+@ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = {Application.class}, properties =
-  {
-     "hapi.fhir.fhir_version=dstu2",
-     "spring.datasource.url=jdbc:h2:mem:dbr2",
-	  "hapi.fhir.cr_enabled=false",
-  })
+	{
+		"hapi.fhir.fhir_version=dstu2",
+		"spring.datasource.url=jdbc:h2:mem:dbr2",
+		"hapi.fhir.cr_enabled=false",
+		"spring.jpa.properties.hibernate.search.backend.directory.type=local-heap"
+	})
 class ExampleServerDstu2IT {
 
 	private static final org.slf4j.Logger ourLog = org.slf4j.LoggerFactory.getLogger(ExampleServerDstu2IT.class);
 	private IGenericClient ourClient;
 	private FhirContext ourCtx;
 
-  @LocalServerPort
-  private int port;
+	@LocalServerPort
+	private int port;
+	@Autowired
+	private ApplicationContext context;
 
-  @Test
+	@Test
 	void testCreateAndRead() {
 
-		String methodName = "testCreateResourceConditional";
+		final String methodName = "testCreateResourceConditional";
 
-		Patient pt = new Patient();
+		final Patient pt = new Patient();
 		pt.addName().addFamily(methodName);
-		IIdType id = ourClient.create().resource(pt).execute().getId();
-		Patient pt2 = ourClient.read().resource(Patient.class).withId(id).execute();
+		final IIdType id = ourClient.create().resource(pt).execute().getId();
+		final Patient pt2 = ourClient.read().resource(Patient.class).withId(id).execute();
 		assertEquals(methodName, pt2.getName().get(0).getFamily().get(0).getValue());
 	}
 
@@ -47,10 +54,10 @@ class ExampleServerDstu2IT {
 	@BeforeEach
 	void beforeEach() {
 
-    ourCtx = FhirContext.forDstu2();
+		ourCtx = FhirContext.forDstu2();
 		ourCtx.getRestfulClientFactory().setServerValidationMode(ServerValidationModeEnum.NEVER);
 		ourCtx.getRestfulClientFactory().setSocketTimeout(1200 * 1000);
-		String ourServerBase = "http://localhost:" + port + "/fhir/";
+		final String ourServerBase = "http://localhost:" + port + "/fhir/";
 		ourClient = ourCtx.newRestfulGenericClient(ourServerBase);
 		ourClient.registerInterceptor(new LoggingInterceptor(true));
 	}
