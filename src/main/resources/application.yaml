@@ -5,7 +5,7 @@ server:
   # Uncomment to serve FHIR under a non-default context path (e.g., /example/path/fhir)
   # servlet:
   #   context-path: /example/path
-  port: 8914
+  port: 8080
   tomcat:
     # allow | as a separator in URLs
     relaxed-query-chars: "|"
@@ -479,7 +479,7 @@ hapi:
     tester:
       home:
         name: Local Tester
-        server_address: 'http://localhost:8914/fhir'
+        server_address: 'http://localhost:8080/fhir'
         refuse_to_fetch_third_party_urls: false
         fhir_version: R4
 service:
