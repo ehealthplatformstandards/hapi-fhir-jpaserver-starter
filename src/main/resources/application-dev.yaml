@@ -1,5 +1,5 @@
 spring:
   datasource:
     url: jdbc:postgresql://host.docker.internal:5432/dte?currentSchema=hapi_fhir
-    username: root
-    password: xMkyqrX8zXKzWxrN9VMK.B*Lk.2YgvH_Z.b
+    username: ${spring.datasource.username}
+    password: ${spring.datasource.password}
