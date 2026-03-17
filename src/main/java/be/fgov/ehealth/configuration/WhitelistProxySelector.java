@@ -1,6 +1,7 @@
 package be.fgov.ehealth.configuration;
 
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.Proxy;
@@ -10,8 +11,9 @@ import java.net.URI;
 import java.util.Collections;
 import java.util.List;
 
-@Slf4j
 public class WhitelistProxySelector extends ProxySelector {
+
+	private static final Logger logger = LoggerFactory.getLogger(WhitelistProxySelector.class);
 
 	private final List<String> whitelist;
 	private final Proxy proxy;
@@ -32,7 +34,7 @@ public class WhitelistProxySelector extends ProxySelector {
 
 	@Override
 	public void connectFailed(final URI uri, final SocketAddress sa, final IOException ioe) {
-		log.error("Proxy connection failed for {}: {}", uri, ioe.getMessage());
+		logger.error("Proxy connection failed for {}: {}", uri, ioe.getMessage());
 	}
 
 }

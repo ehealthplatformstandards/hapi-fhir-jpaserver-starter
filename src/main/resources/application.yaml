@@ -485,5 +485,5 @@ hapi:
 service:
   dte-backend:
     endpoint: https://dte.ehealth.fgov.be
-    username: management
-    password: management
+    username: ${service.dte-backend.username}
+    password: ${service.dte-backend.password}
