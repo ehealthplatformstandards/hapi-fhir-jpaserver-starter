@@ -216,7 +216,7 @@ hapi:
     # C. Clinical Reasoning / CQL / Care Gaps / CDS Hooks
     # -------------------------------------------------------------------------------
     cr:
-      enabled: false                            # exposes Clinical Reasoning operation endpoints
+      enabled: true                            # exposes Clinical Reasoning operation endpoints
       caregaps:
         reporter: "default"
         section_author: "default"
