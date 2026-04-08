@@ -7,7 +7,7 @@ image:
   # -- the path inside the repository
   repository: hapiproject/hapi
   # -- the image tag. As of v5.7.0, this is the `distroless` flavor by default, add `-tomcat` to use the Tomcat-based image.
-  tag: "v7.2.0@sha256:9bcafa8342b572eee248cb7c48c496863d352bbd0347e1d98ea238d09620e89b"
+  tag: "v8.6.0-1@sha256:7611e4d6601f35dd8c223ed2ed47a2807be06976f71b2e5990e6541bbc90c16f"
   # -- image pullPolicy to use
   pullPolicy: IfNotPresent
 
@@ -28,8 +28,13 @@ podAnnotations: {}
 
 # -- pod security context
 podSecurityContext:
-  {}
-  # fsGroup: 2000
+  fsGroupChangePolicy: OnRootMismatch
+  runAsNonRoot: true
+  runAsGroup: 65532
+  runAsUser: 65532
+  fsGroup: 65532
+  seccompProfile:
+    type: RuntimeDefault
 
 securityContext:
   allowPrivilegeEscalation: false
@@ -69,6 +74,11 @@ ingress:
   #    hosts:
   #      - chart-example.local
 
+# -- set container resources according to one common preset (allowed values: none, nano, micro, small, medium, large, xlarge, 2xlarge).
+# This is ignored if `resources` is set (`resources` is recommended for production).
+# More information: <https://github.com/bitnami/charts/blob/main/bitnami/common/templates/_resources.tpl#L15>
+resourcesPreset: "medium"
+
 # -- configure the FHIR server's resource requests and limits
 resources:
   {}
@@ -104,14 +114,19 @@ topologySpreadConstraints:
   #       app.kubernetes.io/instance: hapi-fhir-jpaserver
   #       app.kubernetes.io/name: hapi-fhir-jpaserver
 
+# @ignored
+# used by the bitnami sub-chart. Allowing it allows for overrding the image repository.
+global:
+  security:
+    allowInsecureImages: true
+
 postgresql:
   # -- enable an included PostgreSQL DB.
   # see <https://github.com/bitnami/charts/tree/master/bitnami/postgresql> for details
   # if set to `false`, the values under `externalDatabase` are used
   enabled: true
-  primary:
-    containerSecurityContext:
-      readOnlyRootFilesystem: true
+  image:
+    repository: bitnamilegacy/postgresql
   auth:
     # -- name for a custom database to create
     database: "fhir"
@@ -234,10 +249,39 @@ curl:
   image:
     registry: docker.io
     repository: curlimages/curl
-    tag: 8.6.0@sha256:c3b8bee303c6c6beed656cfc921218c529d65aa61114eb9e27c62047a1271b9b
+    tag: 8.14.1@sha256:9a1ed35addb45476afa911696297f8e115993df459278ed036182dd2cd22b67b
 
 tests:
+  # -- whether the service account token should be auto-mounted for the test pods
+  automountServiceAccountToken: false
+  # -- set container resources according to one common preset (allowed values: none, nano, micro, small, medium, large, xlarge, 2xlarge).
+  # This is ignored if `resources` is set (`resources` is recommended for production).
+  # More information: <https://github.com/bitnami/charts/blob/main/bitnami/common/templates/_resources.tpl#L15>
+  resourcesPreset: "nano"
   # -- configure the test pods resource requests and limits
+  resources: {}
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # @ignored
+  podSecurityContext:
+    fsGroupChangePolicy: OnRootMismatch
+    runAsNonRoot: true
+    runAsGroup: 65532
+    runAsUser: 65532
+    fsGroup: 65532
+    seccompProfile:
+      type: RuntimeDefault
+
+initContainers:
+  # -- set container resources according to one common preset (allowed values: none, nano, micro, small, medium, large, xlarge, 2xlarge).
+  # This is ignored if `resources` is set (`resources` is recommended for production).
+  # More information: <https://github.com/bitnami/charts/blob/main/bitnami/common/templates/_resources.tpl#L15>
+  resourcesPreset: "nano"
+  # -- configure the init containers pods resource requests and limits
   resources: {}
   # limits:
   #   cpu: 100m
@@ -258,3 +302,18 @@ extraConfig:
   #         url: https://build.fhir.org/ig/hl7-eu/gravitate-health/package.tgz
   #         name: hl7.eu.fhir.gh
   #         version: 0.1.0
+
+# -- Optionally specify extra list of additional volumes
+extraVolumes: []
+
+# -- Optionally specify extra list of additional volumeMounts
+extraVolumeMounts: []
+
+waitForDatabaseInitContainer:
+  # -- image to use for the init container which waits until the database
+  # is ready to accept connections
+  image:
+    registry: docker.io
+    repository: bitnamilegacy/postgresql
+    tag: 17.6.0-debian-12-r4@sha256:926356130b77d5742d8ce605b258d35db9b62f2f8fd1601f9dbaef0c8a710a8d
+    pullPolicy: IfNotPresent

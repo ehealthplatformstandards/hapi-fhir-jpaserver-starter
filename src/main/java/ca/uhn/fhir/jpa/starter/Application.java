@@ -20,7 +20,6 @@ import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
-import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchRestClientAutoConfiguration;
 import org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration;
 import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
@@ -30,7 +29,7 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Import;
 
 @ServletComponentScan(basePackageClasses = {RestfulServer.class})
-@SpringBootApplication(exclude = {ElasticsearchRestClientAutoConfiguration.class, ThymeleafAutoConfiguration.class})
+@SpringBootApplication(exclude = {ThymeleafAutoConfiguration.class})
 @Import({
 	StarterCrR4Config.class,
 	StarterCrDstu3Config.class,
@@ -43,29 +42,27 @@ import org.springframework.context.annotation.Import;
 	JpaBatch2Config.class,
 	Batch2JobsConfig.class,
 	TestServerConfig.class,
-	PackageLoaderConfig.class
-	,
+	PackageLoaderConfig.class,
 	PartitionsConfig.class
 })
 @EntityScan("be.fgov.ehealth.entities")
 public class Application extends SpringBootServletInitializer {
 
-	public static void main(String[] args) {
-
-		SpringApplication.run(Application.class, args);
-
-		// Server is now accessible at eg. http://localhost:8080/fhir/metadata
-		// UI is now accessible at http://localhost:8080/
-	}
-
-
 	@Autowired
 	AutowireCapableBeanFactory beanFactory;
 
+	public static void main(final String[] args) {
+
+		SpringApplication.run(Application.class, args);
+
+		// Server is now accessible at e.g. http://localhost:8080/fhir/metadata
+		// UI is now accessible at http://localhost:8080/
+	}
+
 	@Bean
 	@Conditional(OnEitherVersion.class)
-	public ServletRegistrationBean hapiServletRegistration(RestfulServer restfulServer) {
-		ServletRegistrationBean servletRegistrationBean = new ServletRegistrationBean();
+	public ServletRegistrationBean hapiServletRegistration(final RestfulServer restfulServer) {
+		final ServletRegistrationBean servletRegistrationBean = new ServletRegistrationBean();
 		beanFactory.autowireBean(restfulServer);
 		servletRegistrationBean.setServlet(restfulServer);
 		servletRegistrationBean.addUrlMappings("/fhir/*");
@@ -73,5 +70,4 @@ public class Application extends SpringBootServletInitializer {
 
 		return servletRegistrationBean;
 	}
-
 }

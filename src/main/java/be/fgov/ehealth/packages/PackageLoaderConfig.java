@@ -1,7 +1,6 @@
 package be.fgov.ehealth.packages;
 
-import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.jpa.packages.loader.PackageResourceParsingSvc;
+import ca.uhn.fhir.jpa.packages.loader.PackageLoaderSvc;
 import org.hl7.fhir.utilities.npm.PackageServer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,14 +11,12 @@ public class PackageLoaderConfig {
 
 	@Bean
 	@Primary
-	public ca.uhn.fhir.jpa.packages.loader.PackageLoaderSvc ciBuildPackageLoaderSvc() {
-		PackageLoaderSvc svc = new PackageLoaderSvc();
+	public PackageLoaderSvc ciBuildPackageLoaderSvc() {
+		final PackageLoaderSvc svc = new PackageLoaderSvc();
 		svc.getPackageServers().clear();
-		svc.getPackageServers().add(PackageServer.primaryServer());
-		svc.getPackageServers().add(PackageServer.secondaryServer());
+		svc.getPackageServers().addAll(PackageServer.defaultServers());
 		return svc;
 	}
 
 
 }
-

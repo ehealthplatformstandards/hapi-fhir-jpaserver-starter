@@ -125,7 +125,6 @@ local.properties
 .factorypath
 .project
 .settings
-.springBeans
 .sts4-cache
 
 # Code Recommenders
@@ -169,4 +168,4 @@ Temporary Items
 
 # Helm Chart dependencies
 **/charts/*.tgz
-docker-ehealthplatformstandards-jpastarter.tar
+.claude
