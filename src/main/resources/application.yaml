@@ -424,7 +424,7 @@ hapi:
     custom-provider-classes:
       - be.fgov.ehealth.ImplementationGuideByNameR4OperationProvider
       - be.fgov.ehealth.controller.FhirJpaController
-    
+
     # store_meta_source_information: NONE
     # bundle_batch_pool_size: 10
     # bundle_batch_pool_max_size: 50
@@ -506,6 +506,7 @@ hapi:
         server_address: 'http://localhost:8080/fhir'
         refuse_to_fetch_third_party_urls: false
         fhir_version: R4
+
 service:
   dte-backend:
     endpoint: https://dte.ehealth.fgov.be

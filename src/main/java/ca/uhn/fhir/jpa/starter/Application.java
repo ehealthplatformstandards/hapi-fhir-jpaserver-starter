@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration;
 import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
@@ -36,11 +37,14 @@ import org.springframework.context.annotation.Import;
 	WebsocketDispatcherConfig.class,
 	MdmConfig.class,
 	JpaBatch2Config.class,
-	Batch2JobsConfig.class
+	Batch2JobsConfig.class,
 })
 public class Application extends SpringBootServletInitializer {
 
-	public static void main(String[] args) {
+	@Autowired
+	AutowireCapableBeanFactory beanFactory;
+
+	public static void main(final String[] args) {
 
 		SpringApplication.run(Application.class, args);
 
@@ -48,13 +52,10 @@ public class Application extends SpringBootServletInitializer {
 		// UI is now accessible at http://localhost:8080/
 	}
 
-	@Autowired
-	AutowireCapableBeanFactory beanFactory;
-
 	@Bean
 	@Conditional(OnEitherVersion.class)
-	public ServletRegistrationBean hapiServletRegistration(RestfulServer restfulServer) {
-		ServletRegistrationBean servletRegistrationBean = new ServletRegistrationBean();
+	public ServletRegistrationBean hapiServletRegistration(final RestfulServer restfulServer) {
+		final ServletRegistrationBean servletRegistrationBean = new ServletRegistrationBean();
 		beanFactory.autowireBean(restfulServer);
 		servletRegistrationBean.setServlet(restfulServer);
 		servletRegistrationBean.addUrlMappings("/fhir/*");
@@ -62,4 +63,5 @@ public class Application extends SpringBootServletInitializer {
 
 		return servletRegistrationBean;
 	}
+
 }

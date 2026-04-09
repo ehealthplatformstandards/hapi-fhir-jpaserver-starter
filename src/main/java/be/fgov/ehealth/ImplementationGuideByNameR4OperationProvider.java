@@ -21,8 +21,8 @@ public class ImplementationGuideByNameR4OperationProvider {
 
 	@Operation(name = "$installByName", typeName = "ImplementationGuide")
 	public Parameters installByName(@OperationParam(name = "name", min = 1, max = 1) final String name,
-											  @OperationParam(name = "version", min = 1, max = 1) final String version,
-											  @OperationParam(name = "url", min = 1, max = 1) final String url) {
+	                                @OperationParam(name = "version", min = 1, max = 1) final String version,
+	                                @OperationParam(name = "url", min = 1, max = 1) final String url) {
 
 		packageInstallerSvc.install(new PackageInstallationSpec()
 			.setName(name).setVersion(version)
