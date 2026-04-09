@@ -110,12 +110,12 @@ spring:
       max-active: 15
       hikari:
         maximum-pool-size: 10
-      jpa:
-        properties:
-          hibernate.format_sql: true
-          hibernate.show_sql: true
-          hibernate.dialect: org.hibernate.dialect.MySQL8Dialect
-          hibernate.search.enabled: false
+    jpa:
+      properties:
+        hibernate.format_sql: true
+        hibernate.show_sql: true
+        hibernate.dialect: org.hibernate.dialect.MySQL8Dialect
+        hibernate.search.enabled: false
   datasource:
     url: jdbc:mysql://localhost/testserver
     username: root
@@ -140,7 +140,7 @@ spring:
         # --- Optional Hibernate DDL & tuning (commented out from source) ---
         # hbm2ddl:
         # auto: update
-        ddl-auto: update
+        #        ddl-auto: update
         jdbc:
           batch_size: 20
         cache:
@@ -439,7 +439,6 @@ hapi:
     custom-interceptor-classes: be.fgov.ehealth.ApiKeyInterceptor
     custom-provider-classes:
       - be.fgov.ehealth.ImplementationGuideByNameR4OperationProvider
-      - be.fgov.ehealth.controller.FhirJpaController
 
     # store_meta_source_information: NONE
     # bundle_batch_pool_size: 10

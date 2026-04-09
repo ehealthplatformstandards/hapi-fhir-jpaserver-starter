@@ -26,8 +26,8 @@ spring:
       # database connection pool size
       hikari:
         maximum-pool-size: 10
-      jpa:
-        properties:
-          hibernate.format_sql: true
-          hibernate.show_sql: true
-          hibernate.dialect: org.hibernate.dialect.MySQL8Dialect
+    jpa:
+      properties:
+        hibernate.format_sql: true
+        hibernate.show_sql: true
+        hibernate.dialect: org.hibernate.dialect.MySQL8Dialect
