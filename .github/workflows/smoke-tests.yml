@@ -40,7 +40,7 @@ jobs:
       - name: Start server with jetty
         run: |
           mkdir -p logs
-          mvn -P jetty spring-boot:run -Dspring-boot.run.arguments="--spring.config.location=classpath:/application.yaml,src/test/resources/application.yaml" | tee logs/server.log &
+          mvn -P jetty spring-boot:run | tee logs/server.log &
           sleep 180
 
       - name: Execute smoke tests

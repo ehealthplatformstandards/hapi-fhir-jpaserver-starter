@@ -1,12 +1,3 @@
-#spring:
-#  datasource:
-###url: jdbc:mysql://172.17.0.1:3306/fhir-testserver
-###username: fhir-testserver-java-container
-###password: 9nm!zLNxb
-# OLD configuration on OVH
-#    url: jdbc:postgresql://10.20.50.204:5432/ehp-fhir-testserver
-#    username: hp-fhir-testserver
-#    password: cU8.Q4_askLeAP4Juq4E*UQn6_HhMZxqYvn
 spring:
   datasource:
     url: jdbc:postgresql://host.docker.internal:5432/dte?currentSchema=hapi_fhir
