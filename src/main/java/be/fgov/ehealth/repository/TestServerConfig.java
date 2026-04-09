@@ -2,22 +2,17 @@ package be.fgov.ehealth.repository;
 
 
 import be.fgov.ehealth.entities.Tenants;
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.annotation.Configuration;
-
 import com.zaxxer.hikari.HikariDataSource;
-
 import jakarta.persistence.EntityManagerFactory;
-
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.autoconfigure.orm.jpa.JpaProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -37,7 +32,7 @@ public class TestServerConfig implements ApplicationContextAware {
 	private final PersistenceUnitManager persistenceUnitManager;
 	private ApplicationContext context;
 
-	public TestServerConfig(ObjectProvider<PersistenceUnitManager> persistenceUnitManager) {
+	public TestServerConfig(final ObjectProvider<PersistenceUnitManager> persistenceUnitManager) {
 		this.persistenceUnitManager = persistenceUnitManager.getIfAvailable();
 	}
 
@@ -60,24 +55,24 @@ public class TestServerConfig implements ApplicationContextAware {
 	}
 
 	@Bean
-	public LocalContainerEntityManagerFactoryBean testserverEntityManager(@Qualifier("testserverJpaProperties") JpaProperties testserverJpaProperties) {
-		EntityManagerFactoryBuilder builder = createEntityManagerFactoryBuilder(testserverJpaProperties);
+	public LocalContainerEntityManagerFactoryBean testserverEntityManager(@Qualifier("testserverJpaProperties") final JpaProperties testserverJpaProperties) {
+		final EntityManagerFactoryBuilder builder = createEntityManagerFactoryBuilder(testserverJpaProperties);
 		return builder.dataSource(testserverDataSource()).packages(Tenants.class).persistenceUnit("testserverDs").build();
 	}
 
 	@Bean
-	public JpaTransactionManager testserverTransactionManager(@Qualifier("testserverEntityManager") EntityManagerFactory testserverEntityManager) {
+	public JpaTransactionManager testserverTransactionManager(@Qualifier("testserverEntityManager") final EntityManagerFactory testserverEntityManager) {
 		return new JpaTransactionManager(testserverEntityManager);
 	}
 
-	private EntityManagerFactoryBuilder createEntityManagerFactoryBuilder(@Qualifier("testserverJpaProperties") JpaProperties testserverJpaProperties) {
-		JpaVendorAdapter jpaVendorAdapter = createJpaVendorAdapter(testserverJpaProperties);
+	private EntityManagerFactoryBuilder createEntityManagerFactoryBuilder(@Qualifier("testserverJpaProperties") final JpaProperties testserverJpaProperties) {
+		final JpaVendorAdapter jpaVendorAdapter = createJpaVendorAdapter(testserverJpaProperties);
 		return new EntityManagerFactoryBuilder(jpaVendorAdapter, testserverJpaProperties.getProperties(),
-			this.persistenceUnitManager);
+			persistenceUnitManager);
 	}
 
-	private JpaVendorAdapter createJpaVendorAdapter(@Qualifier("testserverJpaProperties") JpaProperties jpaProperties) {
-		AbstractJpaVendorAdapter adapter = new HibernateJpaVendorAdapter();
+	private JpaVendorAdapter createJpaVendorAdapter(@Qualifier("testserverJpaProperties") final JpaProperties jpaProperties) {
+		final AbstractJpaVendorAdapter adapter = new HibernateJpaVendorAdapter();
 		adapter.setShowSql(jpaProperties.isShowSql());
 		if (jpaProperties.getDatabase() != null) {
 			adapter.setDatabase(jpaProperties.getDatabase());
@@ -91,12 +86,12 @@ public class TestServerConfig implements ApplicationContextAware {
 
 	@Bean
 	@Primary
-	JpaProperties getJpaProperties(){
+	JpaProperties getJpaProperties() {
 		return context.getBean("spring.jpa-org.springframework.boot.autoconfigure.orm.jpa.JpaProperties", JpaProperties.class);
 	}
 
 	@Override
-	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-		this.context = applicationContext;
+	public void setApplicationContext(final ApplicationContext applicationContext) throws BeansException {
+		context = applicationContext;
 	}
 }

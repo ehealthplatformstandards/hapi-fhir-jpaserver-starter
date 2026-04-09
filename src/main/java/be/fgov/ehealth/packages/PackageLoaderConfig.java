@@ -18,5 +18,4 @@ public class PackageLoaderConfig {
 		return svc;
 	}
 
-
 }

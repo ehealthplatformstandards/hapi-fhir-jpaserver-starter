@@ -1,8 +1,5 @@
 package ca.uhn.fhir.jpa.starter;
 
-import be.fgov.ehealth.packages.PackageLoaderConfig;
-import be.fgov.ehealth.partitions.PartitionsConfig;
-import be.fgov.ehealth.repository.TestServerConfig;
 import ca.uhn.fhir.batch2.jobs.config.Batch2JobsConfig;
 import ca.uhn.fhir.jpa.batch2.JpaBatch2Config;
 import ca.uhn.fhir.jpa.starter.annotations.OnEitherVersion;
@@ -41,9 +38,6 @@ import org.springframework.context.annotation.Import;
 	MdmConfig.class,
 	JpaBatch2Config.class,
 	Batch2JobsConfig.class,
-	TestServerConfig.class,
-	PackageLoaderConfig.class,
-	PartitionsConfig.class
 })
 @EntityScan("be.fgov.ehealth.entities")
 public class Application extends SpringBootServletInitializer {

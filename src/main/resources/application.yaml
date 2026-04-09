@@ -140,7 +140,7 @@ spring:
         # --- Optional Hibernate DDL & tuning (commented out from source) ---
         # hbm2ddl:
         # auto: update
-        #        ddl-auto: update
+        ddl-auto: update
         jdbc:
           batch_size: 20
         cache:
