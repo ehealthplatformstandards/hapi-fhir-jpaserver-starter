@@ -36,11 +36,11 @@ import org.springframework.context.annotation.Import;
 	WebsocketDispatcherConfig.class,
 	MdmConfig.class,
 	JpaBatch2Config.class,
-	Batch2JobsConfig.class,
+	Batch2JobsConfig.class
 })
 public class Application extends SpringBootServletInitializer {
 
-	public static void main(final String[] args) {
+	public static void main(String[] args) {
 
 		SpringApplication.run(Application.class, args);
 
@@ -53,8 +53,8 @@ public class Application extends SpringBootServletInitializer {
 
 	@Bean
 	@Conditional(OnEitherVersion.class)
-	public ServletRegistrationBean hapiServletRegistration(final RestfulServer restfulServer) {
-		final ServletRegistrationBean servletRegistrationBean = new ServletRegistrationBean();
+	public ServletRegistrationBean hapiServletRegistration(RestfulServer restfulServer) {
+		ServletRegistrationBean servletRegistrationBean = new ServletRegistrationBean();
 		beanFactory.autowireBean(restfulServer);
 		servletRegistrationBean.setServlet(restfulServer);
 		servletRegistrationBean.addUrlMappings("/fhir/*");

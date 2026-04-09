@@ -1,5 +1,6 @@
 package ca.uhn.fhir.jpa.starter.cr;
 
+import ca.uhn.fhir.interceptor.model.RequestPartitionId;
 import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 import ca.uhn.fhir.jpa.cache.IResourceChangeListenerRegistry;
 import ca.uhn.fhir.jpa.cache.ResourceChangeListenerRegistryInterceptor;
@@ -17,7 +18,6 @@ import org.opencds.cqf.fhir.cql.EvaluationSettings;
 import org.opencds.cqf.fhir.cql.engine.retrieve.RetrieveSettings;
 import org.opencds.cqf.fhir.cql.engine.terminology.TerminologySettings;
 import org.opencds.cqf.fhir.cr.hapi.common.CodeCacheResourceChangeListener;
-import org.opencds.cqf.fhir.cr.hapi.common.CqlThreadFactory;
 import org.opencds.cqf.fhir.cr.hapi.common.ElmCacheResourceChangeListener;
 import org.opencds.cqf.fhir.cr.measure.CareGapsProperties;
 import org.opencds.cqf.fhir.cr.measure.MeasureEvaluationOptions;
@@ -26,147 +26,133 @@ import org.opencds.cqf.fhir.utility.client.TerminologyServerClientSettings;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
-import org.springframework.security.concurrent.DelegatingSecurityContextExecutorService;
 
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 @Configuration
 @Conditional({CrConfigCondition.class})
 public class CrCommonConfig {
 
 	@Bean
-	RetrieveSettings retrieveSettings(final CqlData cqlData) {
+	RetrieveSettings retrieveSettings(CqlData cqlData) {
 		return cqlData.getRetrieveSettings();
 	}
 
 	@Bean
-	TerminologySettings terminologySettings(final CqlTerminologyProperties theCqlTerminologyProperties) {
+	TerminologySettings terminologySettings(CqlTerminologyProperties theCqlTerminologyProperties) {
 		return theCqlTerminologyProperties.getTerminologySettings();
 	}
 
 	@Bean
-	TerminologyServerClientSettings terminologyServerClientSettings(final CrProperties theCrProperties) {
+	TerminologyServerClientSettings terminologyServerClientSettings(CrProperties theCrProperties) {
 		return theCrProperties.getTerminologyServerClientSettings();
 	}
 
 	@Bean
 	public EvaluationSettings evaluationSettings(
-		final CqlRuntimeProperties cqlRuntimeProperties,
-		final CqlCompilerProperties cqlCompilerProperties,
-		final RetrieveSettings theRetrieveSettings,
-		final TerminologySettings theTerminologySettings,
-		final Map<VersionedIdentifier, CompiledLibrary> theGlobalLibraryCache,
-		final Map<ModelIdentifier, Model> theGlobalModelCache,
-		final Map<String, List<Code>> theGlobalValueSetCache) {
-		final var evaluationSettings = EvaluationSettings.getDefault();
-		final var cqlOptions = evaluationSettings.getCqlOptions();
+			CqlProperties cqlProperties,
+			Map<VersionedIdentifier, CompiledLibrary> theGlobalLibraryCache,
+			Map<ModelIdentifier, Model> theGlobalModelCache,
+			Map<String, List<Code>> theGlobalValueSetCache) {
+		var evaluationSettings = EvaluationSettings.getDefault();
+		var cqlOptions = evaluationSettings.getCqlOptions();
 
-		final var cqlEngineOptions = cqlOptions.getCqlEngineOptions();
-		final Set<CqlEngine.Options> options = EnumSet.noneOf(CqlEngine.Options.class);
+		var cqlEngineOptions = cqlOptions.getCqlEngineOptions();
+		Set<CqlEngine.Options> options = EnumSet.noneOf(CqlEngine.Options.class);
 
-		if (cqlRuntimeProperties.isEnableExpressionCaching()) {
+		if (cqlProperties.getRuntime().isEnableExpressionCaching()) {
 			options.add(CqlEngine.Options.EnableExpressionCaching);
 		}
-		if (cqlRuntimeProperties.isEnableValidation()) {
+		if (cqlProperties.getRuntime().isEnableValidation()) {
 			options.add(CqlEngine.Options.EnableValidation);
 		}
 		cqlEngineOptions.setOptions(options);
-		if (cqlRuntimeProperties.isDebugLoggingEnabled()) {
+		if (cqlProperties.getRuntime().isDebugLoggingEnabled()) {
 			cqlEngineOptions.setDebugLoggingEnabled(true);
 		}
 		cqlOptions.setCqlEngineOptions(cqlEngineOptions);
 
-		final var cqlCompilerOptions = new CqlCompilerOptions();
+		var cqlCompilerOptions = new CqlCompilerOptions();
 
-		if (cqlCompilerProperties.isEnableDateRangeOptimization()) {
+		if (cqlProperties.getCompiler().isEnableDateRangeOptimization()) {
 			cqlCompilerOptions.setOptions(CqlCompilerOptions.Options.EnableDateRangeOptimization);
 		}
-		if (cqlCompilerProperties.isEnableAnnotations()) {
+		if (cqlProperties.getCompiler().isEnableAnnotations()) {
 			cqlCompilerOptions.setOptions(CqlCompilerOptions.Options.EnableAnnotations);
 		}
-		if (cqlCompilerProperties.isEnableLocators()) {
+		if (cqlProperties.getCompiler().isEnableLocators()) {
 			cqlCompilerOptions.setOptions(CqlCompilerOptions.Options.EnableLocators);
 		}
-		if (cqlCompilerProperties.isEnableResultsType()) {
+		if (cqlProperties.getCompiler().isEnableResultsType()) {
 			cqlCompilerOptions.setOptions(CqlCompilerOptions.Options.EnableResultTypes);
 		}
-		cqlCompilerOptions.setVerifyOnly(cqlCompilerProperties.isVerifyOnly());
-		if (cqlCompilerProperties.isEnableDetailedErrors()) {
+		cqlCompilerOptions.setVerifyOnly(cqlProperties.getCompiler().isVerifyOnly());
+		if (cqlProperties.getCompiler().isEnableDetailedErrors()) {
 			cqlCompilerOptions.setOptions(CqlCompilerOptions.Options.EnableDetailedErrors);
 		}
-		cqlCompilerOptions.setErrorLevel(cqlCompilerProperties.getErrorSeverityLevel());
-		if (cqlCompilerProperties.isDisableListTraversal()) {
+		cqlCompilerOptions.setErrorLevel(cqlProperties.getCompiler().getErrorSeverityLevel());
+		if (cqlProperties.getCompiler().isDisableListTraversal()) {
 			cqlCompilerOptions.setOptions(CqlCompilerOptions.Options.DisableListTraversal);
 		}
-		if (cqlCompilerProperties.isDisableListDemotion()) {
+		if (cqlProperties.getCompiler().isDisableListDemotion()) {
 			cqlCompilerOptions.setOptions(CqlCompilerOptions.Options.DisableListDemotion);
 		}
-		if (cqlCompilerProperties.isDisableListPromotion()) {
+		if (cqlProperties.getCompiler().isDisableListPromotion()) {
 			cqlCompilerOptions.setOptions(CqlCompilerOptions.Options.DisableListPromotion);
 		}
-		if (cqlCompilerProperties.isEnableIntervalDemotion()) {
+		if (cqlProperties.getCompiler().isEnableIntervalDemotion()) {
 			cqlCompilerOptions.setOptions(CqlCompilerOptions.Options.EnableIntervalDemotion);
 		}
-		if (cqlCompilerProperties.isEnableIntervalPromotion()) {
+		if (cqlProperties.getCompiler().isEnableIntervalPromotion()) {
 			cqlCompilerOptions.setOptions(CqlCompilerOptions.Options.EnableIntervalPromotion);
 		}
-		if (cqlCompilerProperties.isDisableMethodInvocation()) {
+		if (cqlProperties.getCompiler().isDisableMethodInvocation()) {
 			cqlCompilerOptions.setOptions(CqlCompilerOptions.Options.DisableMethodInvocation);
 		}
-		if (cqlCompilerProperties.isRequireFromKeyword()) {
+		if (cqlProperties.getCompiler().isRequireFromKeyword()) {
 			cqlCompilerOptions.setOptions(CqlCompilerOptions.Options.RequireFromKeyword);
 		}
-		cqlCompilerOptions.setValidateUnits(cqlCompilerProperties.isValidateUnits());
-		if (cqlCompilerProperties.isDisableDefaultModelInfoLoad()) {
+		cqlCompilerOptions.setValidateUnits(cqlProperties.getCompiler().isValidateUnits());
+		if (cqlProperties.getCompiler().isDisableDefaultModelInfoLoad()) {
 			cqlCompilerOptions.setOptions(CqlCompilerOptions.Options.DisableDefaultModelInfoLoad);
 		}
-		cqlCompilerOptions.setSignatureLevel(cqlCompilerProperties.getSignatureLevel());
-		cqlCompilerOptions.setCompatibilityLevel(cqlCompilerProperties.getCompatibilityLevel());
-		cqlCompilerOptions.setAnalyzeDataRequirements(cqlCompilerProperties.isAnalyzeDataRequirements());
-		cqlCompilerOptions.setCollapseDataRequirements(cqlCompilerProperties.isCollapseDataRequirements());
+		cqlCompilerOptions.setSignatureLevel(cqlProperties.getCompiler().getSignatureLevel());
+		cqlCompilerOptions.setCompatibilityLevel(cqlProperties.getCompiler().getCompatibilityLevel());
+		cqlCompilerOptions.setAnalyzeDataRequirements(
+				cqlProperties.getCompiler().isAnalyzeDataRequirements());
+		cqlCompilerOptions.setCollapseDataRequirements(
+				cqlProperties.getCompiler().isCollapseDataRequirements());
 
 		cqlOptions.setCqlCompilerOptions(cqlCompilerOptions);
 		evaluationSettings.setLibraryCache(theGlobalLibraryCache);
 		evaluationSettings.setModelCache(theGlobalModelCache);
 		evaluationSettings.setValueSetCache(theGlobalValueSetCache);
-		evaluationSettings.setRetrieveSettings(theRetrieveSettings);
-		evaluationSettings.setTerminologySettings(theTerminologySettings);
+		evaluationSettings.setRetrieveSettings(cqlProperties.getRetrieveSettings());
+		evaluationSettings.setTerminologySettings(cqlProperties.getTerminology());
+		evaluationSettings.setRegisteredNamespaces(cqlProperties.getNamespaces());
 		return evaluationSettings;
 	}
 
-	@Primary
-	@Bean
-	public ExecutorService cqlExecutor() {
-		final CqlThreadFactory factory = new CqlThreadFactory();
-		ExecutorService executor = Executors.newFixedThreadPool(2, factory);
-		executor = new DelegatingSecurityContextExecutorService(executor);
-
-		return executor;
-	}
-
 	@Bean(name = "measure.CareGapsProperties")
-	org.opencds.cqf.fhir.cr.measure.CareGapsProperties careGapsProperties(final CrProperties theCrProperties) {
-		final var careGapsProperties = new CareGapsProperties();
+	org.opencds.cqf.fhir.cr.measure.CareGapsProperties careGapsProperties(CrProperties theCrProperties) {
+		var careGapsProperties = new CareGapsProperties();
 		// This check for the resource type really should be happening down in CR where the setting is actually used but
 		// that will have to wait for a future CR release
 		careGapsProperties.setCareGapsReporter(
-			theCrProperties.getCareGaps().getReporter().replace("Organization/", ""));
+				theCrProperties.getCareGaps().getReporter().replace("Organization/", ""));
 		careGapsProperties.setCareGapsCompositionSectionAuthor(
-			theCrProperties.getCareGaps().getSection_author().replace("Organization/", ""));
+				theCrProperties.getCareGaps().getSection_author().replace("Organization/", ""));
 		return careGapsProperties;
 	}
 
 	@Bean
 	MeasureEvaluationOptions measureEvaluationOptions(
-		final EvaluationSettings theEvaluationSettings, final Map<String, ValidationProfile> theValidationProfiles) {
-		final MeasureEvaluationOptions measureEvalOptions = new MeasureEvaluationOptions();
+			EvaluationSettings theEvaluationSettings, Map<String, ValidationProfile> theValidationProfiles) {
+		MeasureEvaluationOptions measureEvalOptions = new MeasureEvaluationOptions();
 		measureEvalOptions.setEvaluationSettings(theEvaluationSettings);
 		if (measureEvalOptions.isValidationEnabled()) {
 			measureEvalOptions.setValidationProfiles(theValidationProfiles);
@@ -176,7 +162,7 @@ public class CrCommonConfig {
 
 	@Bean
 	public PostInitProviderRegisterer postInitProviderRegisterer(
-		final RestfulServer theRestfulServer, final ResourceProviderFactory theResourceProviderFactory) {
+			RestfulServer theRestfulServer, ResourceProviderFactory theResourceProviderFactory) {
 		return new PostInitProviderRegisterer(theRestfulServer, theResourceProviderFactory);
 	}
 
@@ -197,27 +183,27 @@ public class CrCommonConfig {
 
 	@Bean
 	public ElmCacheResourceChangeListener elmCacheResourceChangeListener(
-		final IResourceChangeListenerRegistry theResourceChangeListenerRegistry,
-		final DaoRegistry theDaoRegistry,
-		final EvaluationSettings theEvaluationSettings) {
-		final ElmCacheResourceChangeListener listener =
-			new ElmCacheResourceChangeListener(theDaoRegistry, theEvaluationSettings.getLibraryCache());
+			IResourceChangeListenerRegistry theResourceChangeListenerRegistry,
+			DaoRegistry theDaoRegistry,
+			EvaluationSettings theEvaluationSettings) {
+		ElmCacheResourceChangeListener listener =
+				new ElmCacheResourceChangeListener(theDaoRegistry, theEvaluationSettings.getLibraryCache());
 		theResourceChangeListenerRegistry.registerResourceResourceChangeListener(
-			"Library", SearchParameterMap.newSynchronous(), listener, 1000);
+				"Library", RequestPartitionId.allPartitions(), SearchParameterMap.newSynchronous(), listener, 1000);
 		return listener;
 	}
 
 	@Bean
 	public CodeCacheResourceChangeListener codeCacheResourceChangeListener(
-		final IResourceChangeListenerRegistry theResourceChangeListenerRegistry,
-		final EvaluationSettings theEvaluationSettings,
-		final DaoRegistry theDaoRegistry) {
+			IResourceChangeListenerRegistry theResourceChangeListenerRegistry,
+			EvaluationSettings theEvaluationSettings,
+			DaoRegistry theDaoRegistry) {
 
-		final CodeCacheResourceChangeListener listener =
-			new CodeCacheResourceChangeListener(theDaoRegistry, theEvaluationSettings.getValueSetCache());
+		CodeCacheResourceChangeListener listener =
+				new CodeCacheResourceChangeListener(theDaoRegistry, theEvaluationSettings.getValueSetCache());
 		// registry
 		theResourceChangeListenerRegistry.registerResourceResourceChangeListener(
-			"ValueSet", SearchParameterMap.newSynchronous(), listener, 1000);
+				"ValueSet", RequestPartitionId.allPartitions(), SearchParameterMap.newSynchronous(), listener, 1000);
 
 		return listener;
 	}
