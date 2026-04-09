@@ -89,8 +89,8 @@ spring:
   # B. Core Spring
   # -------------------------------------------------------------------------------
   main:
-    allow-bean-definition-overriding: false
     allow-circular-references: true
+    # allow-bean-definition-overriding: false
     banner-mode: off
 
   autoconfigure:
