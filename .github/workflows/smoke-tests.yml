@@ -38,6 +38,9 @@ jobs:
         run: docker pull jetbrains/intellij-http-client
 
       - name: Start server with jetty
+        env:
+          DTE_USERNAME: management
+          DTE_PASSWORD: management
         run: |
           mkdir -p logs
           mvn -P jetty spring-boot:run | tee logs/server.log &
