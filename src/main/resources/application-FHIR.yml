@@ -1,0 +1,18 @@
+hapi:
+  fhir:
+    ig_runtime_upload_enabled: true
+    cr:
+      enabled: true
+    terminology:
+      valueset_preexpansion_mode: REQUIRE         # USE_IF_PRESENT | REQUIRE | IGNORE
+    cdshooks:
+      enabled: true
+    advanced_lucene_indexing: false
+    partitioning:
+      allow_references_across_partitions: true
+    cors:
+      allow_Credentials: true
+    custom-bean-packages: be.fgov.ehealth
+    custom-interceptor-classes: be.fgov.ehealth.ApiKeyInterceptor
+    custom-provider-classes:
+      - be.fgov.ehealth.ImplementationGuideByNameR4OperationProvider
