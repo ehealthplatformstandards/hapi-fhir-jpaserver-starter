@@ -1,8 +1,0 @@
-spring:
-  datasource:
-    url: jdbc:postgresql://host.docker.internal:5432/dte?currentSchema=hapi_fhir
-    username: ${spring.datasource.username}
-    password: ${spring.datasource.password}
-service:
-  dte-backend:
-    endpoint: https://dte-dev.ehealth.fgov.be

@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="hapi_fhir" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
-    <option name="ACTIVE_PROFILES" value="FHIR, DEV" />
+    <option name="ACTIVE_PROFILES" value="FHIR, local" />
     <option name="FRAME_DEACTIVATION_UPDATE_POLICY" value="UnknownPolicyInFreeMode" />
     <module name="hapi-fhir-jpaserver-starter" />
     <option name="SHORTEN_COMMAND_LINE" value="ARGS_FILE" />
