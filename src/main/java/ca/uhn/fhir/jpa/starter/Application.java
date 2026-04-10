@@ -16,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration;
 import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
@@ -37,9 +36,8 @@ import org.springframework.context.annotation.Import;
 	WebsocketDispatcherConfig.class,
 	MdmConfig.class,
 	JpaBatch2Config.class,
-	Batch2JobsConfig.class,
+	Batch2JobsConfig.class
 })
-@EntityScan("be.fgov.ehealth.entities")
 public class Application extends SpringBootServletInitializer {
 
 	@Autowired
