@@ -3,6 +3,9 @@ spring:
     url: jdbc:postgresql://host.docker.internal:5432/dte?currentSchema=hapi_fhir
     username: ${spring.datasource.username}
     password: ${spring.datasource.password}
+    max-active: 15
+    hikari:
+      maximum-pool-size: 10
   jpa:
     properties:
       hibernate:
