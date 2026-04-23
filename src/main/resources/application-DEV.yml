@@ -1,6 +1,7 @@
 spring:
   datasource:
     url: jdbc:postgresql://host.docker.internal:5432/dte?currentSchema=hapi_fhir
+    driver-class-name: org.postgresql.Driver
     username: ${spring.datasource.username}
     password: ${spring.datasource.password}
     max-active: 15
@@ -13,6 +14,6 @@ spring:
       ddl-auto: update
 service:
   dte-backend:
-    endpoint: https://dte-dev.ehealth.fgov.be
+    endpoint: https://dte-dev.ehealth.fgov.be/dte-backend
     username: ${service.dte-backend.username}
     password: ${service.dte-backend.password}

@@ -1,6 +1,7 @@
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/dte?currentSchema=hapi_fhir
+    driver-class-name: org.postgresql.Driver
     username: myuser
     password: mypassword
 service:
