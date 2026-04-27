@@ -34,6 +34,7 @@ public class ApiKeyInterceptor {
 	@Hook(Pointcut.SERVER_INCOMING_REQUEST_PRE_HANDLER_SELECTED)
 	public boolean handleMethod(final RequestDetails requestDetails) {
 		updatePartitionWithApiKey(requestDetails);
+		requestDetails.removeParameter("api_key");
 		requestDetails.setCompleteUrl(UrlTools.stripApiKey(requestDetails));
 		return true;
 	}

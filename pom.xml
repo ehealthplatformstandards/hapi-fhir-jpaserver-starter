@@ -25,6 +25,7 @@
 
         <!-- ehealth Dependencies -->
         <wiremock.version>3.13.2</wiremock.version>
+        <logback-ecs-encoder.version>1.7.0</logback-ecs-encoder.version>
     </properties>
 
     <!-- one-liner to take you to the cloud with settings form the application.yaml file: -->
@@ -442,11 +443,17 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- ehealth Dependencies -->
         <dependency>
             <groupId>org.wiremock</groupId>
             <artifactId>wiremock-standalone</artifactId>
             <version>${wiremock.version}</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>co.elastic.logging</groupId>
+            <artifactId>logback-ecs-encoder</artifactId>
+            <version>${logback-ecs-encoder.version}</version>
         </dependency>
 
     </dependencies>
