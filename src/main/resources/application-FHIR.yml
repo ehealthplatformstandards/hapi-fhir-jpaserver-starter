@@ -20,6 +20,9 @@ hapi:
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
+    max-active: 15
+    hikari:
+      maximum-pool-size: 10
   jpa:
     properties:
       ddl-auto: update
