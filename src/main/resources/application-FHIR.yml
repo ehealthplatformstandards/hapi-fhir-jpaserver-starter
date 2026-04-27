@@ -16,3 +16,12 @@ hapi:
     custom-interceptor-classes: be.fgov.ehealth.ApiKeyInterceptor
     custom-provider-classes:
       - be.fgov.ehealth.ImplementationGuideByNameR4OperationProvider
+
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    properties:
+      ddl-auto: update
+      hibernate:
+        dialect: ${HIBERNATE_DIALECT:ca.uhn.fhir.jpa.model.dialect.HapiFhirPostgresDialect}
