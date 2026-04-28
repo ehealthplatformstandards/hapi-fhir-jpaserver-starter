@@ -28,7 +28,9 @@ spring:
       ddl-auto: update
       hibernate:
         dialect: ${HIBERNATE_DIALECT:ca.uhn.fhir.jpa.model.dialect.HapiFhirPostgresDialect}
-
+  main:
+    banner-mode: CONSOLE
 logging:
   file:
     path: /logs/dte-hapi
+  config: classpath:logback-spring.xml

@@ -8,3 +8,6 @@ service:
     endpoint: https://dte-dev.ehealth.fgov.be/dte-backend
     username: ${service.dte-backend.username}
     password: ${service.dte-backend.password}
+logging:
+  file:
+    service-name: dte-hapi-dev
