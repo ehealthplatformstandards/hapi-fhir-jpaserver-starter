@@ -3,6 +3,8 @@ hapi:
     ig_runtime_upload_enabled: true
     cr:
       enabled: true
+    validation:
+      requests_enabled: true
     terminology:
       valueset_preexpansion_mode: REQUIRE         # USE_IF_PRESENT | REQUIRE | IGNORE
     cdshooks:
