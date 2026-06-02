@@ -11,8 +11,8 @@ public class RequestPartitionHelperSvc extends ca.uhn.fhir.jpa.partition.Request
 	private static final Logger ourLog = LoggerFactory.getLogger(RequestPartitionHelperSvc.class);
 
 	private static final Set<String> ALLOWED_RESOURCES = Set.of(
-		ResourceTypes.QUESTIONNAIRE.toCode()
-		//		ResourceTypes.STRUCTUREDEFINITION.toCode()
+		ResourceTypes.QUESTIONNAIRE.toCode(),
+		ResourceTypes.STRUCTUREDEFINITION.toCode()
 	);
 
 	public RequestPartitionHelperSvc() {
