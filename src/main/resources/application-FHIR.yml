@@ -4,7 +4,7 @@ hapi:
     cr:
       enabled: true
     validation:
-      requests_enabled: true
+      requests_enabled: false
     terminology:
       valueset_preexpansion_mode: REQUIRE         # USE_IF_PRESENT | REQUIRE | IGNORE
     cdshooks:
