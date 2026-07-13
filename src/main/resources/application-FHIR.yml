@@ -4,7 +4,7 @@ hapi:
     cr:
       enabled: true
     validation:
-      requests_enabled: true
+      requests_enabled: false
     terminology:
       valueset_preexpansion_mode: REQUIRE         # USE_IF_PRESENT | REQUIRE | IGNORE
     cdshooks:
@@ -12,6 +12,7 @@ hapi:
     advanced_lucene_indexing: false
     partitioning:
       allow_references_across_partitions: true
+      default_partition_id: 1
     cors:
       allow_Credentials: true
     custom-bean-packages: be.fgov.ehealth

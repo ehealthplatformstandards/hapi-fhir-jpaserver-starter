@@ -12,7 +12,7 @@ public class RequestPartitionHelperSvc extends ca.uhn.fhir.jpa.partition.Request
 
 	private static final Set<String> ALLOWED_RESOURCES = Set.of(
 		ResourceTypes.QUESTIONNAIRE.toCode()
-		//		ResourceTypes.STRUCTUREDEFINITION.toCode()
+		//, ResourceTypes.STRUCTUREDEFINITION.toCode()
 	);
 
 	public RequestPartitionHelperSvc() {
