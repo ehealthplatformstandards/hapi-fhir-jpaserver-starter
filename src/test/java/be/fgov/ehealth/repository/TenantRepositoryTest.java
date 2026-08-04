@@ -1,6 +1,7 @@
 package be.fgov.ehealth.repository;
 
-import be.fgov.ehealth.domain.TenantView;
+import be.fgov.ehealth.domain.dte.TenantView;
+import be.fgov.ehealth.repository.dte.TenantRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 

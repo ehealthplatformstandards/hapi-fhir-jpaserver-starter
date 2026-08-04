@@ -1,6 +1,7 @@
 package be.fgov.ehealth.repository;
 
 
+import be.fgov.ehealth.repository.dte.DteBackendConfig;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import org.junit.jupiter.api.AfterAll;

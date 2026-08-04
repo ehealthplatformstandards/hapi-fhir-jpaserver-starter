@@ -1,4 +1,4 @@
-package be.fgov.ehealth.repository;
+package be.fgov.ehealth.repository.dte;
 
 
 import org.springframework.boot.context.properties.ConfigurationProperties;

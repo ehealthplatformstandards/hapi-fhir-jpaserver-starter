@@ -1,7 +1,7 @@
 package be.fgov.ehealth;
 
-import be.fgov.ehealth.domain.TenantView;
-import be.fgov.ehealth.repository.TenantRepository;
+import be.fgov.ehealth.domain.dte.TenantView;
+import be.fgov.ehealth.repository.dte.TenantRepository;
 import ca.uhn.fhir.jpa.entity.PartitionEntity;
 import ca.uhn.fhir.jpa.partition.IPartitionLookupSvc;
 import ca.uhn.fhir.rest.api.server.RequestDetails;

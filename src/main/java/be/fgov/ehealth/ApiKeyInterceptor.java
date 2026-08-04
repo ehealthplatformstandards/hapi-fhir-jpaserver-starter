@@ -1,8 +1,8 @@
 package be.fgov.ehealth;
 
 
-import be.fgov.ehealth.domain.TenantView;
-import be.fgov.ehealth.repository.TenantRepository;
+import be.fgov.ehealth.domain.dte.TenantView;
+import be.fgov.ehealth.repository.dte.TenantRepository;
 import be.fgov.ehealth.utils.UrlTools;
 import ca.uhn.fhir.interceptor.api.Hook;
 import ca.uhn.fhir.interceptor.api.Interceptor;

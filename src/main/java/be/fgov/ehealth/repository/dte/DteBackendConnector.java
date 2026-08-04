@@ -1,4 +1,4 @@
-package be.fgov.ehealth.repository;
+package be.fgov.ehealth.repository.dte;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;

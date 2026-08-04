@@ -19,7 +19,7 @@ hapi:
     custom-interceptor-classes: be.fgov.ehealth.ApiKeyInterceptor
     custom-provider-classes:
       - be.fgov.ehealth.ImplementationGuideByNameR4OperationProvider
-
+      - be.fgov.ehealth.controller.FhirJpaController
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver

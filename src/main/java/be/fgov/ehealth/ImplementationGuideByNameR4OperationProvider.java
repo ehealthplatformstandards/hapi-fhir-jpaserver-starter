@@ -25,7 +25,8 @@ public class ImplementationGuideByNameR4OperationProvider {
 	                                @OperationParam(name = "url", min = 1, max = 1) final String url) {
 
 		packageInstallerSvc.install(new PackageInstallationSpec()
-			.setName(name).setVersion(version)
+			.setName(name)
+			.setVersion(version)
 			.setFetchDependencies(true)
 			.setPackageUrl(url)
 			.addDependencyExclude("hl7\\.fhir\\.r4\\.core"));

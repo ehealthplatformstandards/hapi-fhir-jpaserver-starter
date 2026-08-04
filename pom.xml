@@ -26,6 +26,8 @@
         <!-- ehealth Dependencies -->
         <wiremock.version>3.13.2</wiremock.version>
         <logback-ecs-encoder.version>1.7.0</logback-ecs-encoder.version>
+        <jsoup.version>1.22.2</jsoup.version>
+        <lombok.version>1.18.46</lombok.version>
     </properties>
 
     <!-- one-liner to take you to the cloud with settings form the application.yaml file: -->
@@ -454,6 +456,16 @@
             <groupId>co.elastic.logging</groupId>
             <artifactId>logback-ecs-encoder</artifactId>
             <version>${logback-ecs-encoder.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jsoup</groupId>
+            <artifactId>jsoup</artifactId>
+            <version>${jsoup.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${lombok.version}</version>
         </dependency>
 
     </dependencies>

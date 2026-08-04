@@ -1,6 +1,6 @@
-package be.fgov.ehealth.repository;
+package be.fgov.ehealth.repository.dte;
 
-import be.fgov.ehealth.domain.TenantView;
+import be.fgov.ehealth.domain.dte.TenantView;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;

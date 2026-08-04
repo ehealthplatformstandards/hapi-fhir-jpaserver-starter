@@ -22,6 +22,14 @@ public class FhirJpaController {
 		this.iPartitionLookupSvc = iPartitionLookupSvc;
 	}
 
+	/*
+			curl --location 'http://localhost:8080/fhir/1/$findAllPartition' \
+		--header 'Content-Type: application/fhir+json' \
+		--data '{
+			  "resourceType": "Bundle"
+		}'
+	*/
+
 	@Operation(name = "$findAllPartition")
 	public Parameters findAllPartition() {
 		final List<PartitionEntity> partitions = iPartitionLookupSvc.listPartitions();
