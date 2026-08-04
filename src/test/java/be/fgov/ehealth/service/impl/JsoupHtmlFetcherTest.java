@@ -68,6 +68,7 @@ class JsoupHtmlHtmlFetcherTest {
 
 	@BeforeEach
 	void setUp() {
+		when(connectionMock.header(anyString(), anyString())).thenReturn(connectionMock);
 		when(connectionMock.timeout(anyInt())).thenReturn(connectionMock);
 	}
 
