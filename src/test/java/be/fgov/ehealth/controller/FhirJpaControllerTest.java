@@ -1,5 +1,6 @@
 package be.fgov.ehealth.controller;
 
+import be.fgov.ehealth.service.ImplementationGuideService;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.jpa.entity.PartitionEntity;
 import ca.uhn.fhir.jpa.partition.IPartitionLookupSvc;
@@ -31,6 +32,8 @@ class FhirJpaControllerTest {
 
 	@MockitoBean
 	private IPartitionLookupSvc iPartitionLookupSvc;
+	@MockitoBean
+	private ImplementationGuideService implementationGuideService;
 
 	@LocalServerPort
 	private int port;
