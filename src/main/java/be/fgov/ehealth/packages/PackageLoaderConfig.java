@@ -12,7 +12,7 @@ public class PackageLoaderConfig {
 	@Bean
 	@Primary
 	public PackageLoaderSvc ciBuildPackageLoaderSvc() {
-		final PackageLoaderSvc svc = new PackageLoaderSvc();
+		final PackageLoaderSvc svc = new ProxyAwarePackageLoaderSvc();
 		svc.getPackageServers().clear();
 		svc.getPackageServers().addAll(PackageServer.defaultServers());
 		return svc;
